@@ -4,7 +4,9 @@
  */
 
 import { Constituent} from "./Constituent.js";
-import {Terminal, Terminal_en, Terminal_fr, Phrase, Phrase_en, Phrase_fr, Dependent, Dependent_en, Dependent_fr} from "./jsRealB.js"
+import {
+    Terminal, Terminal_en, /*Terminal_fr,*/ Phrase, Phrase_en, /*Phrase_fr,*/ Dependent, Dependent_en, /*Dependent_fr*/
+} from "./jsRealB.js"
 export {fromJSON,ppJSON}
 
 /// Functions for dealing with JSON input
@@ -18,8 +20,8 @@ const dependents = ["root", "det", "subj", "comp", "mod", "coord"];
  * Create a Constituent from a parsed JSON structure
  * <a href="http://rali.iro.umontreal.ca/JSrealB/current/data/jsRealB-jsonInput.html">more info</a>
  * @param {Object} json to convert
- * @param {"en"|"fr"} lang language for this object 
- * @returns Constituent corresponding to the JSON structure 
+ * @param {"en"|"fr"} lang language for this object
+ * @returns Constituent corresponding to the JSON structure
  */
 function fromJSON(json,lang){
     if (typeof json == "object" && !Array.isArray(json)){
@@ -61,7 +63,7 @@ function fromJSON(json,lang){
 /**
  * Add properties to the current object from the information in the JSON object
  * It applies the "usual" jsRealB options
- * @param {Object} json 
+ * @param {Object} json
  * @returns this object
  */
 Constituent.prototype.setJSONprops = function(json){
@@ -73,7 +75,7 @@ Constituent.prototype.setJSONprops = function(json){
                     props[opt].forEach(o=>Array.isArray(o)
                         ? Constituent.prototype[opt].apply(this,o)
                         : Constituent.prototype[opt].call(this,o))
-                } else 
+                } else
                     Constituent.prototype[opt].call(this,props[opt])
             } else if (!["pat","h"].includes(opt)){ // do not copy the pat or h properties of a verb
                 console.log("Constituent.fromJSON: illegal prop:"+opt);
@@ -95,8 +97,9 @@ Phrase.fromJSON = function(constType,json,lang){
         const elements=json["elements"];
         if (Array.isArray(elements)){
             const args=elements.map(json => fromJSON(json,lang));
-            return (lang=="en" ? new Phrase_en(args,constType,"en")
-                               : new Phrase_fr(args,constType,"fr")).setJSONprops(json);
+            // return (lang=="en" ? new Phrase_en(args,constType,"en")
+            //                    : new Phrase_fr(args,constType,"fr")).setJSONprops(json);
+            return new Phrase_en(args,constType,"en").setJSONprops(json);
         } else {
             console.log("Phrase.fromJSON: elements should be an array:"+JSON.stringify(json))
         }
@@ -121,8 +124,9 @@ Phrase.fromJSON = function(constType,json,lang){
             if (Array.isArray(dependents)){
                 let args=dependents.map(json => fromJSON(json,lang));
                 args.unshift(fromJSON(json["terminal"],lang));
-                return (lang=="en" ? new Dependent_en(args,constType,"en")
-                                   : new Dependent_fr(args,constType,"fr")).setJSONprops(json);
+                // return (lang=="en" ? new Dependent_en(args,constType,"en")
+                //                    : new Dependent_fr(args,constType,"fr")).setJSONprops(json);
+                return new Dependent_en(args,constType,"en").setJSONprops(json);
             } else {
                 console.log("Dependent.fromJSON: dependents should be an array:"+JSON.stringify(json))
             }
@@ -141,8 +145,9 @@ Phrase.fromJSON = function(constType,json,lang){
  */
 Terminal.fromJSON = function(constType,json,lang){
     if ("lemma" in json){
-        return (lang=="en" ? new Terminal_en([json["lemma"],"en"],constType)
-                           : new Terminal_fr([json["lemma"],"fr"],constType)).setJSONprops(json);
+        // return (lang=="en" ? new Terminal_en([json["lemma"],"en"],constType)
+        //                    : new Terminal_fr([json["lemma"],"fr"],constType)).setJSONprops(json);
+        return new Terminal_en([json["lemma"],"en"],constType).setJSONprops(json);
     } else {
         console.log("Terminal.fromJSON: no lemma found in "+JSON.stringify(json));
     }
@@ -166,7 +171,7 @@ Phrase.prototype.toJSON = function(){
  * @returns an Object which can be serialized as a JSON object
  */
 Dependent.prototype.toJSON = function (){
-    let res={dependent:this.constType, 
+    let res={dependent:this.constType,
                 terminal: this.terminal.toJSON()};
     if (this.dependents)
         res["dependents"]=this.dependents.map(e=>e.toJSON());
@@ -195,7 +200,7 @@ Terminal.prototype.toJSON = function(){
  * Adaptation of ppJson.py (in project json-rnc)
  * only useful for debugging, not necessary for using jsRealB
  * @param {Object} obj JSON object to pretty-print
- * @param {int?} level indentation level, 0 if omitted 
+ * @param {int?} level indentation level, 0 if omitted
  * @param {String} str string to which new info is appended, "" if omitted
  * @returns indented string
  */
@@ -220,7 +225,7 @@ function ppJSON(obj,level,str){
             } else if (Array.isArray(obj)){
                 out('[');
                 const n=obj.length;
-                // indent only if one of the elements of the array is an object != null 
+                // indent only if one of the elements of the array is an object != null
                 const indent = obj.some((e)=>typeof e == "object" && e!==null)
                 for (var i = 1; i <= n; i++) {
                     const elem=obj[i-1];
