@@ -12,10 +12,21 @@ const config = {
     },
     globalObject:"globalThis",
   },
+  module: {
+    rules: [
+      {
+        test: /\.gz/,
+        type: 'asset/inline'
+      }
+    ]
+  },
   plugins:[
     new webpack.DefinePlugin({
         BUILDTIME: JSON.stringify(new Date().toLocaleString("en-CA"))
     })
-  ]  
+  ],
+  experiments: {
+    topLevelAwait: true
+  }
 };
 module.exports = config;

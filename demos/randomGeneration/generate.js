@@ -79,7 +79,7 @@ var tagPersonne = {
 function cbVal(cbName){
     return $(`input[name="${cbName}"]:checked`).val();
 }
-    
+
 function changeTemps(){
     // console.log("appel de changeTemps");
     var select=$("<select>").attr({id:"tense",size:1}).addClass("custom-select","col-2");
@@ -96,7 +96,7 @@ function changeTemps(){
     for (var pers in codesPersonne[tempsSel][nombre]){
       perSelect.append($("<option>"+tagPersonne[codesPersonne[tempsSel][nombre][pers]]+
                         "</option>").attr({value:codesPersonne[tempsSel][nombre][pers]}))
-    }       
+    }
     var oldPerSelect =$("#personne");
     oldPerSelect.replaceWith(perSelect);
 }
@@ -173,7 +173,7 @@ function showExpr(exprOptions){
             $("#realisation").val(jsexpr.toString());
         } else {
             // keep a copy before the options are processed, because they can modify the expression...
-            const jsexprC=jsexpr.clone() 
+            const jsexprC=jsexpr.clone()
             $("#jsreal").val(jsexpr.toSource(0)+".typ("+JSON.stringify(options)+")");
             jsexprC.typ(options)
             $("#realisation").val(jsexprC.toString());
@@ -229,7 +229,7 @@ function aleatoire() {
 
 function deroulantAleatoire($selObj, zeroAcceptable) {
     const l=$selObj.find("option").length;
-    $selObj.prop("selectedIndex", 
+    $selObj.prop("selectedIndex",
                  Math.floor(typeof(zeroAcceptable)!=='undefined'?Math.random()*l:Math.random()*(l-1)+1));
 }
 
@@ -246,7 +246,7 @@ function aleatoireBinaire($checkBox) {
     $checkBox.prop("checked",oneOf([true,false]));
 }
 
-// pour que l'autocomplete ne cherche que les mots débutant par le préfixe. 
+// pour que l'autocomplete ne cherche que les mots débutant par le préfixe.
 function chercher(liste){
     return function( request, response ) {
           var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
@@ -294,17 +294,18 @@ function initVocabulaire(){
 function usePronounCallback(self,selectors){
     const checked=$(self).is(":checked")
     $(selectors).prop("readonly",checked)
-                .css("background-color",checked?"#EEE":"#FFF")    
+                .css("background-color",checked?"#EEE":"#FFF")
 }
 
-$(document).ready(function() {
+window.addEventListener('load', async () => {
+    console.log('window loaded');
     Object.assign(globalThis,jsRealB);
     if (enFrancais){
-        loadFr(); 
+        loadFr();
     } else{
-        loadEn();
+        await loadEn();
     }
-    lexicon=getLexicon(); 
+    lexicon=getLexicon();
     changeTemps();
     initVocabulaire();
     // boutons de réalisation
@@ -315,7 +316,7 @@ $(document).ready(function() {
     $(`#usePron`)  .on("click",function(){usePronounCallback(this,"#nom,#adj")})
     $(`#usePronOD`).on("click",function(){usePronounCallback(this,"#nomOD,#adjOD")})
     $(`#usePronOI`).on("click",function(){usePronounCallback(this,"#nomOI,#adjOI")})
-    
+
     $("#mode").on("change",changeTemps);
     $("#aleatoire").on("click",aleatoire);
 });

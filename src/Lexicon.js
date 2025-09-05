@@ -5,16 +5,39 @@
 
 
 ////  this is still experimental and not supported by Safari and Firefox, but very useful...
-import LexiconEn from "../data/lexicon-en.json" assert { type: 'json' };
-import LexiconFr from "../data/lexicon-fr.json" assert { type: 'json' };
-import rulesEn from "../data/rules-en.json" assert { type: 'json' };
-import rulesFr from "../data/rules-fr.json" assert { type: 'json' };
-export {loadEn,loadFr,addToLexicon,updateLexicon,getLemma,getLanguage,getLexicon,getRules,
-        quoteOOV,setQuoteOOV,reorderVPcomplements,setReorderVPcomplements}
+import LexiconEn from '../data/lexicon-en.json.gz';
+//import LexiconFr from "../data/lexicon-fr.json" assert { type: 'json' };
+import rulesEn from '../data/rules-en.json.gz';
+//import rulesFr from "../data/rules-fr.json" assert { type: 'json' };
+export {
+    initLexicon,
+    loadEn,
+    //loadFr,
+    addToLexicon,updateLexicon,getLemma,getLanguage,getLexicon,getRules,
+        quoteOOV,setQuoteOOV,reorderVPcomplements,setReorderVPcomplements
+}
 
-// hidden variables 
-const lexicon = {"en":LexiconEn,"fr":LexiconFr};
-const rules   = {"en":rulesEn,  "fr":rulesFr};
+async function decompressBlob(blob) {
+    const ds = new DecompressionStream("gzip");
+    const decompressedStream = blob.stream().pipeThrough(ds);
+    return await new Response(decompressedStream).blob();
+}
+
+const lexicon = {}; //,"fr":LexiconFr};
+const rules   = {}; //,  "fr":rulesFr};
+
+async function initLexicon() {
+    console.log('decompressing lexicon  and grammar rules');
+    const lexiconBlob = await (await fetch(LexiconEn)).blob();
+    const lexiconDecomp = JSON.parse(await (await decompressBlob(lexiconBlob)).text());
+    const rulesBlob = await (await fetch(rulesEn)).blob();
+    const rulesDecomp = JSON.parse(await (await decompressBlob(rulesBlob)).text());
+    lexicon.en = lexiconDecomp;
+    rules.en = rulesDecomp;
+}
+
+    // hidden variables
+
 // current realization language
 let language  = "en";
 
@@ -22,28 +45,29 @@ let language  = "en";
  * Set current language to "en" English
  * @param {boolean?} trace if given and true, write message on the console
  */
-function loadEn(trace=false){
+async function loadEn(trace=false){
     language="en";
+    await initLexicon();
     if (trace)console.log("English lexicon and rules loaded")
 }
 /**
  * Set current language to "fr" French
  * @param {boolean?} trace if given and true, write message on the console
  */
-function loadFr(trace=false){
-    language="fr";
-    if (trace)console.log("Règles et lexique français chargés")
-}
+// function loadFr(trace=false){
+//     language="fr";
+//     if (trace)console.log("Règles et lexique français chargés")
+// }
 
 /**
  * Add new info or replace lexical information about a lemma
  * With a single object, then the key is the lemma to change
  * Existing info about a lemma that is not specified stays unchanged
- * 
+ *
  * @param {string|object} lemma lemma to change
  * @param {object|null} newInfos new information, if null delete the entry
  * @param {string?} lang language in which to change, otherwise use current language
- * @returns changed entry for lemma 
+ * @returns changed entry for lemma
  */
 function addToLexicon(lemma,newInfos,lang){
     let lex = getLexicon(lang)
@@ -79,7 +103,7 @@ function updateLexicon(newLexicon){
 /**
  * Get lemma information from the lexicon
  * @param {string} lemma to query
- * @param {("en"|"fr")?} lang 
+ * @param {("en"|"fr")?} lang
  */
 function getLemma(lemma,lang){
     return getLexicon(lang)[lemma];
@@ -111,11 +135,11 @@ function getRules(lang){
         return rules[lang];
     return rules[language]
 }
- 
+
 let quoteOOV=false;
 /**
  * Set flag for quoting out of vocabulary tokens, otherwise a warning is issued
- * @param {boolean} qOOV 
+ * @param {boolean} qOOV
  */
 function setQuoteOOV (qOOV){
     quoteOOV=qOOV
@@ -124,9 +148,9 @@ function setQuoteOOV (qOOV){
 let reorderVPcomplements=false;
 /**
  * Flag for reordering VP complements by increasing length
- * Undocumented feature, seemed "useful" for AMR to text generation, 
+ * Undocumented feature, seemed "useful" for AMR to text generation,
  * but should be probably deprecated
- * @param {boolean} reorder 
+ * @param {boolean} reorder
  */
 function setReorderVPcomplements(reorder){
     reorderVPcomplements=reorder;

@@ -23,25 +23,25 @@ import { Dependent } from "./Dependent.js"
 import { English_dependent } from "./Dependent-en.js";
 import { French_dependent } from "./Dependent-fr.js";
 
-import {loadFr,loadEn,addToLexicon,getLanguage,getLemma,getLexicon,getRules,setReorderVPcomplements,setQuoteOOV} from "./Lexicon.js"
+import {/*loadFr,*/loadEn,addToLexicon,getLanguage,getLemma,getLexicon,getRules,setReorderVPcomplements,setQuoteOOV} from "./Lexicon.js"
 import {fromJSON,ppJSON} from "./JSON-tools.js"
 
-export {Constituent, Terminal, Phrase, Dependent, 
-        loadFr,loadEn,addToLexicon,getLanguage,getLemma,getLexicon,getRules,setReorderVPcomplements,setQuoteOOV,
+export {Constituent, Terminal, Phrase, Dependent,
+        /*loadFr,*/loadEn,addToLexicon,getLanguage,getLemma,getLexicon,getRules,setReorderVPcomplements,setQuoteOOV,
         fromJSON, ppJSON,
         getElems, exceptionOnWarning,setExceptionOnWarning, resetSavedWarnings, getSavedWarnings, savedWarnings,
         load, oneOf, mix, jsRealB_version, jsRealB_dateCreated, isRunningUnderNode,
-        Terminal_en, Terminal_fr, terminal, N,A,Pro,D,V,Adv,C,P,DT,NO,Q,
-        Phrase_en, Phrase_fr, phrase, S,NP,AP,VP,AdvP,PP,CP,SP,
-        Dependent_en, Dependent_fr, dependent, root, subj, det, mod, comp, coord,
+        Terminal_en, /*Terminal_fr,*/ terminal, N,A,Pro,D,V,Adv,C,P,DT,NO,Q,
+        Phrase_en, /*Phrase_fr,*/ phrase, S,NP,AP,VP,AdvP,PP,CP,SP,
+        Dependent_en, /*Dependent_fr,*/ dependent, root, subj, det, mod, comp, coord,
 }
 
 /**
  * flatten list of elements removing null and undefined
- * @param {Constittuent[]} es List of (Lists) Consituents with possibly undefined or null elements
+ * @param {Constituent[]} es List of (Lists) Consituents with possibly undefined or null elements
  * @returns list of Constituents
  */
-function getElems(es){ // 
+function getElems(es){ //
     let res=[]
     for (const e of es) {
         if (e !== null && e!== undefined){
@@ -61,8 +61,8 @@ function getElems(es){ //
  * This function is defined here instead of being in Lexicon.js to be able to call warn(...)
  */
 function load(lang,trace=false){
-    if (lang=="fr") loadFr(trace)
-    else if (lang=="en") loadEn(trace)
+    /*if (lang=="fr") loadFr(trace)
+    else*/ if (lang=="en") loadEn(trace)
     else
         Q(lang).warn("bad language",lang)
 }
@@ -73,10 +73,10 @@ let jsRealB_oneOf_map= new Map()  // internal Map for keeping track of calls to 
  * if the first argument is a list, selection is done within the list,
  * otherwise the selection is among the arguments
  * Implements the "mode:once" of RosaeNLG (https://rosaenlg.org/rosaenlg/4.3.0/mixins_ref/synonyms.html#_choose_randomly_but_try_not_to_repeat)
- * Select an alternative randomly, but tries not to repeat the same alternative. 
- * When all alternatives have been triggered, it will reset, but will try not run the last triggered alternative 
+ * Select an alternative randomly, but tries not to repeat the same alternative.
+ * When all alternatives have been triggered, it will reset, but will try not run the last triggered alternative
  * as the first new one, avoiding repetitions.
- * @param {Array | any} elems 
+ * @param {Array | any} elems
  * @returns the selected element, if it is a function, evaluate it with no parameter
  */
 function oneOf(elems){
@@ -89,7 +89,7 @@ function oneOf(elems){
         let past_indices=jsRealB_oneOf_map.get(elems_key) // a list of past indices
         if (past_indices.length<l){
             indices=[]
-            for (let i=0;i<l;i++){ 
+            for (let i=0;i<l;i++){
                 if (past_indices.indexOf(i)<0)
                     indices.push(i)
             }
@@ -100,7 +100,7 @@ function oneOf(elems){
             past_indices.splice(0)     // clear the array
         }
         idx = indices[Math.floor(Math.random()*indices.length)] // select index
-        past_indices.push(idx)  
+        past_indices.push(idx)
     } else { // first call
         indices=[...Array(l).keys()]
         idx = indices[Math.floor(Math.random()*indices.length)] // select index
@@ -114,7 +114,7 @@ function oneOf(elems){
  * Mix elements of a list in a random order.
  * If the first argument is a list, mixing is done within the list,
  * otherwise the mix is among the arguments. The original list is not modified
- * @param {Array | any} elems 
+ * @param {Array | any} elems
  * @returns a new list with original arguments shuffled, if an element of the list is a function, evaluate it with no parameter
  */
 function mix(elems){
@@ -138,9 +138,9 @@ const jsRealB_version="5.0.1";
 /**
  * Date of jsRealB "compile", it is set by webpack
  */
-const jsRealB_dateCreated=typeof BUILDTIME == "string" ? BUILDTIME : new Date().toLocaleString("en-CA"); 
+const jsRealB_dateCreated=typeof BUILDTIME == "string" ? BUILDTIME : new Date().toLocaleString("en-CA");
 
-// 
+//
 /**
  * Runtime environment checking
  */
@@ -151,15 +151,15 @@ const isRunningUnderNode = typeof process !== "undefined" && process?.versions?.
  */
 let exceptionOnWarning=false;
 /**
- * if this is set to an array then warnings will be pushed on this array, 
+ * if this is set to an array then warnings will be pushed on this array,
  * so that all warnings can be returned in one bunch to the caller which has
- * to resetSavedWarnings() once it has called getSavedWarnings() 
+ * to resetSavedWarnings() once it has called getSavedWarnings()
  */
-let savedWarnings=undefined;    
+let savedWarnings=undefined;
 
 /**
  * Sets the flag so that a warning also generates an exception
- * @param {boolean} val 
+ * @param {boolean} val
  */
 function setExceptionOnWarning(val){
     exceptionOnWarning=val;
@@ -175,7 +175,7 @@ function resetSavedWarnings(){
 }
 
 /**
- * Returns the current list of saved warnings. 
+ * Returns the current list of saved warnings.
  * CAUTION: it DOES NOT reset the list
  * @returns the list of saved warnings
  */
@@ -188,7 +188,7 @@ function getSavedWarnings(){
 ///
 
 /**
- * Empty class for an English terminal 
+ * Empty class for an English terminal
  *
  * @class Terminal_en
  * @typedef {Terminal_en}
@@ -202,7 +202,7 @@ class Terminal_en extends English_terminal(Terminal){}
  * @typedef {Terminal_fr}
  * @extends {French_terminal(Terminal)}
  */
-class Terminal_fr extends French_terminal(Terminal){}
+//class Terminal_fr extends French_terminal(Terminal){}
 
 /**
  * Create an instance of a language specific Terminal according to the current language
@@ -218,8 +218,9 @@ function terminal(terminalType,lemmaArr){
     } else {
         lang = lemmaArr[1]
     }
-    return lang=="en" ? new Terminal_en(lemmaArr,terminalType) 
-                      : new Terminal_fr(lemmaArr,terminalType)
+    // return lang=="en" ? new Terminal_en(lemmaArr,terminalType)
+    //                   : new Terminal_fr(lemmaArr,terminalType)
+    return new Terminal_en(lemmaArr,terminalType);
 }
 
 /**
@@ -231,73 +232,73 @@ function N(...lemma){return terminal("N",lemma)}
 
 /**
  * Creates an Adjective Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with NA as constType
  */
-function A(...lemma){return terminal("A",lemma)} 
+function A(...lemma){return terminal("A",lemma)}
 
 /**
  * Creates a Pronoun Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with Pro as constType
  */
-function Pro(...lemma){return terminal("Pro",lemma)} 
+function Pro(...lemma){return terminal("Pro",lemma)}
 
 /**
  * Creates a Determiner Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with D as constType
  */
 function D(...lemma){return terminal("D",lemma)}
 
 /**
  * Creates a Verb Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with NV as constType
  */
-function V(...lemma){return terminal("V",lemma)} 
+function V(...lemma){return terminal("V",lemma)}
 
 /**
  * Creates an Adverb Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with N as constType
  */
-function Adv(...lemma){return terminal("Adv",lemma)} 
+function Adv(...lemma){return terminal("Adv",lemma)}
 
 /**
  * Creates a Conjunction Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with C as constType
  */
-function C(...lemma){return terminal("C",lemma)} 
+function C(...lemma){return terminal("C",lemma)}
 
 /**
  * Creates a Preposition Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with P as constType
  */
 function P(...lemma){return terminal("P",lemma)}
 
 /**
  * Creates a Date Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with DT as constType
  */
 function DT(...lemma){return terminal("DT",lemma)}
 
 /**
  * Creates a Number Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with NO as constType
  */
-function NO(...lemma){return terminal("NO",lemma)} 
+function NO(...lemma){return terminal("NO",lemma)}
 
 /**
  * Creates a Quoted String Terminal
- * @param {...string} _ lemma with optional language 
+ * @param {...string} _ lemma with optional language
  * @returns Terminal with Q as constType
  */
-function Q(...lemma){return terminal("Q",lemma)} 
+function Q(...lemma){return terminal("Q",lemma)}
 
 /**
  * Empty class for an English Phrase
@@ -314,7 +315,7 @@ class Phrase_en extends English_phrase(English_non_terminal(Phrase)){}
  * @typedef {Phrase_fr}
  * @extends {French_phrase(French_non_terminal(Phrase))}
  */
-class Phrase_fr extends French_phrase(French_non_terminal(Phrase)){}
+//class Phrase_fr extends French_phrase(French_non_terminal(Phrase)){}
 
 /**
  * Create an instance of a language specific Phrase according to the current language
@@ -324,8 +325,9 @@ class Phrase_fr extends French_phrase(French_non_terminal(Phrase)){}
  * @returns {(Phrase_en | Phrase_fr)}
  */
 function phrase(phraseType,elements){
-    return getLanguage()=="en" ? new Phrase_en(elements,phraseType,"en") 
-                               : new Phrase_fr(elements,phraseType,"fr")
+    // return getLanguage()=="en" ? new Phrase_en(elements,phraseType,"en")
+    //                            : new Phrase_fr(elements,phraseType,"fr")
+    return new Phrase_en(elements,phraseType,"en");
 }
 
 /**
@@ -399,7 +401,7 @@ class Dependent_en extends English_dependent(English_non_terminal(Dependent)){}
  * @typedef {Dependent_fr}
  * @extends {French_dependent(French_non_terminal(Dependent))}
  */
-class Dependent_fr extends French_dependent(French_non_terminal(Dependent)){}
+//class Dependent_fr extends French_dependent(French_non_terminal(Dependent)){}
 
 /**
  * Create an instance of a specific Dependent according to the current language
@@ -409,8 +411,9 @@ class Dependent_fr extends French_dependent(French_non_terminal(Dependent)){}
  * @returns {(Dependent_en | Dependent_fr)}
  */
 function dependent(deprel,dependents){
-    return getLanguage()=="en" ? new Dependent_en(dependents,deprel,"en") 
-                               : new Dependent_fr(dependents,deprel,"fr")
+    // return getLanguage()=="en" ? new Dependent_en(dependents,deprel,"en")
+    //                            : new Dependent_fr(dependents,deprel,"fr")
+    return new Dependent_en(dependents,deprel,"en");
 }
 
 /**
